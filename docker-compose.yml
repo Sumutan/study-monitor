@@ -71,6 +71,12 @@ services:
       - ./uploads:/app/uploads
       # 挂载 Docker socket，使后端容器能通过 Docker SDK 查询容器状态（运维面板用）
       - /var/run/docker.sock:/var/run/docker.sock
+      # 挂载 dws CLI 二进制和认证配置（v5.1 发送钉钉私信提醒用）
+      # 注意：部署前需在服务器上确认以下路径：
+      #   1. which dws → 确认二进制路径（通常是 /usr/local/bin/dws）
+      #   2. ls ~/.dws/ → 确认配置目录存在（dws auth login 后生成）
+      - /usr/local/bin/dws:/usr/local/bin/dws:ro
+      - ${HOME}/.dws:/root/.dws
     depends_on:
       mysql:
         condition: service_healthy            # 等待 MySQL 健康检查通过后再启动，避免连接失败
