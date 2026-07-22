@@ -291,8 +291,8 @@ async def _dws_search_user_by_mobile(mobile: str) -> str | None:
         if result.returncode != 0:
             return None
         data = json.loads(result.stdout)
-        body = data.get("body", {})
-        return body.get("userId") or body.get("user_id") or body.get("id")
+        res = data.get("result") or data.get("body") or {}
+        return res.get("userId") or res.get("user_id") or res.get("id")
     except Exception:
         return None
 
@@ -322,10 +322,15 @@ async def _dws_send_user_msg(user_id: str, student_name: str, class_name: str, e
             capture_output=True, text=True, timeout=15, env=_get_dws_env(),
         )
         if result.returncode != 0:
+            print(f"[dws-send] FAIL user={user_id} rc={result.returncode} stderr={result.stderr[:200]}")
             return False
         data = json.loads(result.stdout)
-        return data.get("success", False)
-    except Exception:
+        ok = data.get("success", False)
+        if not ok:
+            print(f"[dws-send] FAIL user={user_id} response={result.stdout[:200]}")
+        return ok
+    except Exception as e:
+        print(f"[dws-send] EXCEPTION user={user_id} err={e}")
         return False
 
 
