@@ -505,6 +505,32 @@ async def send_slow_reminder(
     }
 
 
+class TestSendRequest(BaseModel):
+    """测试发送请求体"""
+    user_id: str  # 钉钉 userId
+
+
+@router.post("/test-send")
+async def test_send(
+    req: TestSendRequest,
+    user: User = Depends(require_role("teacher", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    测试发送 — 向指定钉钉用户发送一条测试消息，用于验证 dws 配置是否正确
+    """
+    if not settings.DT_APP_KEY or not settings.DT_APP_SECRET:
+        return {"code": 1, "msg": "未配置钉钉应用凭证"}
+
+    ok = await _dws_send_user_msg(
+        req.user_id,
+        student_name="测试学生",
+        class_name="一年级1班",
+        effective_minutes=0.0,
+    )
+    return {"code": 0, "data": {"sent": ok, "user_id": req.user_id}}
+
+
 @router.get("/export")
 async def export_study_data(
     course_id: int = Query(...),
