@@ -289,25 +289,26 @@ async def _dws_search_user_by_mobile(mobile: str) -> str | None:
             capture_output=True, text=True, timeout=15, env=_get_dws_env(),
         )
         if result.returncode != 0:
+            print(f"[dws-search] FAIL mobile={mobile} rc={result.returncode} stderr={result.stderr[:200]}")
             return None
         data = json.loads(result.stdout)
         res = data.get("result") or data.get("body") or {}
-        return res.get("userId") or res.get("user_id") or res.get("id")
-    except Exception:
+        uid = res.get("userId") or res.get("user_id") or res.get("id")
+        if not uid:
+            print(f"[dws-search] NO-UID mobile={mobile} stdout={result.stdout[:200]}")
+        return uid
+    except Exception as e:
+        print(f"[dws-search] EXCEPTION mobile={mobile} err={e}")
         return None
 
 
 async def _dws_send_user_msg(user_id: str, student_name: str, class_name: str, effective_minutes: float) -> bool:
     """以当前登录用户身份给指定用户发送单聊私信，返回是否成功"""
-    # 根据班级确定钉钉群名称
-    group_name = "一年级1班" if "1" in (class_name or "") else "一年级2班"
     text = (
-        f"家长您好，目前查询到您孩子初高中衔接课学习状态异常，"
-        f"课程观看时长为 {effective_minutes} 分钟。\n\n"
-        f"如遇播放、登录等观看问题，可私信钉钉群"
-        "（钉钉群\"" + group_name + "\"）技术老师蔡苏杭处理；\n\n"
-        f"若因特殊情况暂未开课学习，请及时私信马志宇老师或张碧纯老师完成报备，感谢配合！\n\n"
-        f"（该消息由平台智能体自动发送，请勿回复）"
+        "家长您好，目前查询到您孩子初高中衔接课学习状态异常。\n\n"
+        "如遇播放、登录等观看问题，可私信钉钉群技术老师蔡苏杭处理；\n\n"
+        "若因特殊情况暂未开课学习，请及时私信马志宇老师或张碧纯老师完成报备，感谢配合！\n\n"
+        "（该消息由平台智能体自动发送，请勿回复）"
     )
     try:
         result = await asyncio.to_thread(
@@ -423,6 +424,9 @@ async def send_slow_reminder(
         user_data[uid]["total_effective"] += r.sec_effective or 0
 
     # ── 3. 筛选进度慢的学生 ──
+    # 不发送提醒的屏蔽名单（user_id）
+    BLOCKED_USER_IDS = {854, 1405}  # 蔡俊豪(有进度), 吴欣语
+
     all_query = select(User.id, User.name, User.class_name).where(User.role == "student")
     if req.class_name:
         all_query = all_query.where(User.class_name == req.class_name)
@@ -430,7 +434,11 @@ async def send_slow_reminder(
     all_students = all_result.all()
 
     slow_list = []
+    blocked_list = []  # 被屏蔽的学生
     for s in all_students:
+        if s.id in BLOCKED_USER_IDS:
+            blocked_list.append({"name": s.name, "status": "skip", "reason": "已屏蔽"})
+            continue
         data = user_data.get(s.id, {"completed_sections": 0, "total_effective": 0})
         if data["completed_sections"] <= slow_threshold:
             slow_list.append({
@@ -443,8 +451,21 @@ async def send_slow_reminder(
                 "effective_minutes": round(data["total_effective"] / 60, 1),
             })
 
-    if not slow_list:
+    if not slow_list and not blocked_list:
         return {"code": 0, "data": {"results": [], "total": 0, "success": 0, "fail": 0, "skip": 0}}
+
+    if not slow_list:
+        # 只有被屏蔽的学生，返回屏蔽结果
+        return {
+            "code": 0,
+            "data": {
+                "results": blocked_list,
+                "total": len(blocked_list),
+                "success": 0,
+                "fail": 0,
+                "skip": len(blocked_list),
+            },
+        }
 
     # ── 4. 批量查询家长绑定关系 ──
     slow_user_ids = [s["user_id"] for s in slow_list]
@@ -472,6 +493,7 @@ async def send_slow_reminder(
         for binding in student_bindings:
             # 优先使用已绑定的 dingtalk_user_id，否则用手机号搜索
             target_user_id = binding.dingtalk_user_id
+            print(f"[dws-bind] student={s['name']} dt_uid={binding.dingtalk_user_id} dt_mobile={binding.dingtalk_mobile}")
             if not target_user_id and binding.dingtalk_mobile:
                 target_user_id = await _dws_search_user_by_mobile(binding.dingtalk_mobile)
 
@@ -498,11 +520,15 @@ async def send_slow_reminder(
     fail_count = sum(1 for r in results if r["status"] == "fail")
     skip_count = sum(1 for r in results if r["status"] == "skip")
 
+    # 合并被屏蔽的学生
+    all_results = blocked_list + results
+    skip_count += len(blocked_list)
+
     return {
         "code": 0,
         "data": {
-            "results": results,
-            "total": len(results),
+            "results": all_results,
+            "total": len(all_results),
             "success": success_count,
             "fail": fail_count,
             "skip": skip_count,
