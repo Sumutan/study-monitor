@@ -357,7 +357,7 @@ async function downloadExamTicketPDF() {
   container.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;'
   container.innerHTML = `
     <div style="padding:24px 24px;box-sizing:border-box;">
-      <h2 style="text-align:center;color:#000;font-size:20px;margin:0 0 6px 0;">2026级新生素养评测准考证</h2>
+      <h2 style="text-align:center;color:#000;font-size:20px;margin:0 0 6px 0;">2026级新生素养测试准考证</h2>
       <div style="height:2px;background:#000;margin:0 0 14px 0;"></div>
       <div style="display:flex;gap:18px;align-items:stretch;">
         <div style="flex:1;min-width:0;">
@@ -381,21 +381,21 @@ async function downloadExamTicketPDF() {
         </div>
       </div>
       <div style="height:1px;background:#bbb;margin:12px 0;"></div>
-      <p style="font-size:13px;font-weight:bold;color:#000;text-align:center;margin:0 0 8px 0;">高一新生学科素养测试诚信考试温馨提示</p>
-      <p style="font-size:12px;font-weight:bold;color:#000;margin:0 0 3px 0;">一、考前物资规范准备</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴指针式手表入场。</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">2. 严禁带入学校的物品：手机、电子手环、智能手表、智能眼镜等一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
-      <p style="font-size:12px;font-weight:bold;color:#000;margin:0 0 3px 0;">二、考场作答流程须知</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料第一时间填写姓名、准考证号，规范填涂准考证号；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐试卷、答题卡、草稿纸后方可离场，不拖延、不续答。</p>
-      <p style="font-size:12px;font-weight:bold;color:#000;margin:0 0 3px 0;">三、严守诚信底线，明晰违纪作弊后果</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
-      <p style="font-size:11px;color:#000;margin:0 0 3px 0;line-height:1.7;">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
-      <p style="font-size:11px;color:#000;margin:0;line-height:1.7;">2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
+      <p style="font-size:14px;font-weight:bold;color:#000;text-align:center;margin:0 0 8px 0;">素养测试诚信考试温馨提示</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">一、考前物资规范准备</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴指针式手表入场。</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 严禁带入学校的物品：手机、电子手环、智能手表、智能眼镜等一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">二、考场作答流程须知</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料第一时间填写姓名、准考证号，规范填涂准考证号；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐试卷、答题卡、草稿纸后方可离场，不拖延、不续答。</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">三、严守诚信底线，明晰违纪作弊后果</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
+      <p style="font-size:12px;color:#000;margin:0;line-height:1.8;">2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
       <div style="height:1px;background:#bbb;margin:10px 0;"></div>
       <p style="font-size:12px;font-weight:bold;color:#000;text-align:center;margin:0 0 6px 0;">考场座位安排示意图</p>
-      <img src="${seatMapImg}" style="display:block;width:60%;max-width:60%;margin:0 auto 10px auto;border:1px solid #000;" />
+      <img src="${seatMapImg}" style="display:block;width:40%;max-width:40%;margin:0 auto 10px auto;border:1px solid #000;" />
       <div style="height:1px;background:#bbb;margin:6px 0;"></div>
       <p style="text-align:center;font-size:10px;color:#888;margin:0;">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
     </div>
