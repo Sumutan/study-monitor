@@ -230,7 +230,7 @@ import api from './utils/api'
 import { getMediaUrl } from './utils/homeworkFiles'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
-import seatMapImg from '../../2.png'
+import seatMapImg from './assets/2.png'
 
 const router = useRouter()
 // 获取认证 store 的单例实例
