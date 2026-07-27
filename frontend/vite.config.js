@@ -35,7 +35,7 @@ export default defineConfig({
 
     proxy: {
       '/api': {                              // 匹配所有 /api 开头的请求
-        target: 'http://127.0.0.1:8000',     // 转发到本地后端 FastAPI 服务
+        target: 'http://localhost:8000',     // 转发到本地后端 FastAPI 服务
                                              // 开发时前后端分别启动：
                                              //   - 后端：uvicorn 在 8000 端口
                                              //   - 前端：vite dev 在 3000 端口
