@@ -149,11 +149,11 @@
           </div>
           <div class="exam-room-row">
             <span class="exam-room-label">考场</span>
-            <span class="exam-room-value highlight">{{ examRoomData.exam_room }}</span>
+            <span class="exam-room-value">{{ examRoomData.exam_room }}</span>
           </div>
           <div class="exam-room-row">
             <span class="exam-room-label">座位号</span>
-            <span class="exam-room-value highlight">{{ examRoomData.seat_number }}</span>
+            <span class="exam-room-value">{{ examRoomData.seat_number }}</span>
           </div>
         </div>
         <div class="exam-room-tips">
@@ -355,38 +355,45 @@ async function downloadExamTicketPDF() {
   const container = document.createElement('div')
   container.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;'
   container.innerHTML = `
-    <div style="padding:24px 22px;box-sizing:border-box;">
-      <h2 style="text-align:center;color:#1890ff;font-size:20px;margin:0 0 6px 0;">准考证</h2>
-      <div style="height:2px;background:#1890ff;margin:0 0 14px 0;"></div>
-      <div style="display:flex;gap:18px;">
+    <div style="padding:28px 26px;box-sizing:border-box;">
+      <h2 style="text-align:center;color:#000;font-size:22px;margin:0 0 6px 0;">准考证</h2>
+      <div style="height:2px;background:#000;margin:0 0 16px 0;"></div>
+      <div style="display:flex;gap:20px;">
         <div style="flex:1;min-width:0;">
+          <table style="width:100%;font-size:14px;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:#555;width:64px;">姓名</td><td style="padding:6px 0;color:#000;">${d.student_name}</td></tr>
+            <tr><td style="padding:6px 0;color:#555;">准考证号</td><td style="padding:6px 0;color:#000;">${d.admission_number}</td></tr>
+            <tr><td style="padding:6px 0;color:#555;">考场</td><td style="padding:6px 0;color:#000;">${d.exam_room}</td></tr>
+            <tr><td style="padding:6px 0;color:#555;">座位号</td><td style="padding:6px 0;color:#000;">${d.seat_number}</td></tr>
+          </table>
+        </div>
+        <div style="flex:1;min-width:0;border-left:1px solid #bbb;padding-left:16px;">
+          <p style="font-size:14px;font-weight:bold;color:#000;margin:0 0 6px 0;">测试时间安排（2026-8-1 周六）</p>
           <table style="width:100%;font-size:13px;border-collapse:collapse;">
-            <tr><td style="padding:6px 0;color:#888;width:56px;">姓名</td><td style="padding:6px 0;color:#333;">${d.student_name}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;">准考证号</td><td style="padding:6px 0;color:#333;">${d.admission_number}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;">考场</td><td style="padding:6px 0;color:#1890ff;font-size:16px;font-weight:bold;">${d.exam_room}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;">座位号</td><td style="padding:6px 0;color:#1890ff;font-size:16px;font-weight:bold;">${d.seat_number}</td></tr>
-          </table>
-        </div>
-        <div style="flex:1;min-width:0;border-left:1px solid #e0e0e0;padding-left:14px;">
-          <p style="font-size:12px;font-weight:bold;color:#1890ff;margin:0 0 6px 0;">测试时间安排（2026-8-1 周六）</p>
-          <table style="width:100%;font-size:11px;border-collapse:collapse;">
-            <tr><td style="padding:3px 0;color:#555;">8:00—9:30</td><td style="padding:3px 0;color:#333;">语文</td></tr>
-            <tr><td style="padding:3px 0;color:#555;">10:00—11:20</td><td style="padding:3px 0;color:#333;">数学</td></tr>
-            <tr><td style="padding:3px 0;color:#555;">11:20—12:20</td><td style="padding:3px 0;color:#333;">1号食堂就餐</td></tr>
-            <tr><td style="padding:3px 0;color:#555;">12:20—13:20</td><td style="padding:3px 0;color:#333;">教室休息</td></tr>
-            <tr><td style="padding:3px 0;color:#555;">13:40—15:00</td><td style="padding:3px 0;color:#333;">英语（不考听力）</td></tr>
-            <tr><td style="padding:3px 0;color:#555;">15:30—16:50</td><td style="padding:3px 0;color:#333;">科学（物化）</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">8:00—9:30</td><td style="padding:5px 0;color:#000;">语文</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">10:00—11:20</td><td style="padding:5px 0;color:#000;">数学</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">11:20—12:20</td><td style="padding:5px 0;color:#000;">分批1号食堂就餐</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">12:20—13:20</td><td style="padding:5px 0;color:#000;">教室休息</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">13:40—15:00</td><td style="padding:5px 0;color:#000;">英语（不考听力）</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">15:30—16:50</td><td style="padding:5px 0;color:#000;">科学（物理、化学）</td></tr>
           </table>
         </div>
       </div>
-      <div style="height:1px;background:#e0e0e0;margin:12px 0;"></div>
-      <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:8px 10px;margin:0 0 10px 0;">
-        <p style="font-size:11px;font-weight:bold;color:#d48806;margin:0 0 4px 0;">温馨提示</p>
-        <p style="font-size:10px;color:#8c6d1f;margin:0 0 3px 0;line-height:1.5;"><b>一、考前准备：</b>透明文具袋，蓝黑色签字笔、2B铅笔、橡皮、直尺、圆规；仅可佩戴指针式手表。严禁携带手机、电子手环、智能手表等无线通讯设备及涂改液、修正带、计算器，发现一律按作弊处理。</p>
-        <p style="font-size:10px;color:#8c6d1f;margin:0 0 3px 0;line-height:1.5;"><b>二、考场流程：</b>提前15分钟入场安检；开考前5分钟分发试卷，立即填写姓名、准考证号并规范填涂；看清答题卡对应区域，勿答错题号；终考铃响立即停笔，等候收卷。</p>
-        <p style="font-size:10px;color:#8c6d1f;margin:0;line-height:1.5;"><b>三、诚信考试：</b>全程视频监控。作弊行为（携带资料/电子设备、偷看抄袭、传递试卷、代考等）全部科目成绩作废，记入在校诚信档案。</p>
-      </div>
-      <p style="text-align:center;font-size:9px;color:#bbb;margin:0;">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
+      <div style="height:1px;background:#bbb;margin:16px 0;"></div>
+      <p style="font-size:14px;font-weight:bold;color:#000;text-align:center;margin:0 0 10px 0;">高一新生学科素养测试诚信考试温馨提示</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">一、考前物资规范准备</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴指针式手表入场。</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 严禁带入学校的物品：手机、电子手环、智能手表、智能眼镜等一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">二、考场作答流程须知</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料第一时间填写姓名、准考证号，规范填涂准考证号；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐试卷、答题卡、草稿纸后方可离场，不拖延、不续答。</p>
+      <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">三、严守诚信底线，明晰违纪作弊后果</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
+      <p style="font-size:12px;color:#000;margin:0;line-height:1.8;">2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
+      <div style="height:1px;background:#bbb;margin:12px 0;"></div>
+      <p style="text-align:center;font-size:11px;color:#888;margin:0;">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
     </div>
   `
   document.body.appendChild(container)
