@@ -148,13 +148,25 @@
             <span class="exam-room-value">{{ examRoomData.admission_number }}</span>
           </div>
           <div class="exam-room-row">
-            <span class="exam-room-label">座位号</span>
-            <span class="exam-room-value highlight">{{ examRoomData.seat_number }}</span>
-          </div>
-          <div class="exam-room-row">
             <span class="exam-room-label">考场</span>
             <span class="exam-room-value highlight">{{ examRoomData.exam_room }}</span>
           </div>
+          <div class="exam-room-row">
+            <span class="exam-room-label">座位号</span>
+            <span class="exam-room-value highlight">{{ examRoomData.seat_number }}</span>
+          </div>
+        </div>
+        <div class="exam-room-tips">
+          <p class="tips-title">温馨提示</p>
+          <p class="tips-content"></p>
+        </div>
+        <div class="exam-room-actions">
+          <button class="btn-download-pdf" @click="downloadExamTicketPDF">
+            <svg class="icon-download" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            下载准考证
+          </button>
         </div>
       </div>
     </div>
@@ -195,6 +207,8 @@ import { useAuthStore } from './utils/auth'  // 【交互】引用 auth.js 的�
 import * as dd from 'dingtalk-jsapi'  // 钉钉环境检测：判断是否在钉钉客户端内
 import api from './utils/api'
 import { getMediaUrl } from './utils/homeworkFiles'
+import { jsPDF } from 'jspdf'
+import html2canvas from 'html2canvas'
 
 const router = useRouter()
 // 获取认证 store 的单例实例
@@ -319,6 +333,52 @@ watch(showExamRoom, (val) => {
     fetchExamRoom()
   }
 })
+
+/**
+ * 下载准考证 PDF
+ * 使用 html2canvas 渲染 + jsPDF 生成，确保中文正常显示
+ */
+async function downloadExamTicketPDF() {
+  if (!examRoomData.value) return
+  const d = examRoomData.value
+
+  // 创建临时渲染容器
+  const container = document.createElement('div')
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;'
+  container.innerHTML = `
+    <div style="padding:30px 25px;box-sizing:border-box;">
+      <h2 style="text-align:center;color:#1890ff;font-size:22px;margin:0 0 8px 0;">准考证</h2>
+      <div style="height:2px;background:#1890ff;margin:0 0 20px 0;"></div>
+      <table style="width:100%;border-collapse:collapse;font-size:15px;">
+        <tr><td style="padding:10px 0;color:#888;width:80px;">姓名</td><td style="padding:10px 0;color:#333;">${d.student_name}</td></tr>
+        <tr><td style="padding:10px 0;color:#888;">准考证号</td><td style="padding:10px 0;color:#333;">${d.admission_number}</td></tr>
+        <tr><td style="padding:10px 0;color:#888;">考场</td><td style="padding:10px 0;color:#1890ff;font-size:18px;font-weight:bold;">${d.exam_room}</td></tr>
+        <tr><td style="padding:10px 0;color:#888;">座位号</td><td style="padding:10px 0;color:#1890ff;font-size:18px;font-weight:bold;">${d.seat_number}</td></tr>
+      </table>
+      <div style="height:1px;background:#e0e0e0;margin:10px 0;"></div>
+      <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:6px;padding:10px 12px;margin:12px 0;">
+        <p style="font-size:13px;font-weight:bold;color:#d48806;margin:0 0 4px 0;">温馨提示</p>
+        <p style="font-size:12px;color:#8c6d1f;margin:0;line-height:1.6;"></p>
+      </div>
+      <p style="text-align:center;font-size:10px;color:#bbb;margin:20px 0 0 0;">本准考证由系统自动生成</p>
+    </div>
+  `
+  document.body.appendChild(container)
+
+  try {
+    const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const imgData = canvas.toDataURL('image/png')
+
+    const pdfW = 210 // A4 width in mm
+    const pdfH = (canvas.height * pdfW) / canvas.width
+
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH)
+    doc.save(`准考证_${d.student_name}.pdf`)
+  } finally {
+    document.body.removeChild(container)
+  }
+}
 
 /**
  * 关闭绑定弹窗，跳转到登录页用账号密码登录
@@ -922,6 +982,52 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   color: #1890ff;
   font-size: 18px;
   font-weight: 600;
+}
+
+/* 温馨提示 */
+.exam-room-tips {
+  margin: 12px 16px 0;
+  padding: 12px;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+}
+.tips-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #d48806;
+  margin: 0 0 4px 0;
+}
+.tips-content {
+  font-size: 12px;
+  color: #8c6d1f;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* 下载按钮 */
+.exam-room-actions {
+  padding: 12px 16px;
+  text-align: center;
+}
+.btn-download-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: #1890ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-download-pdf:hover {
+  background: #40a9ff;
+}
+.icon-download {
+  flex-shrink: 0;
 }
 
 /* ====== 全局响应式：顶栏适配 ====== */
