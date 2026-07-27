@@ -158,7 +158,28 @@
         </div>
         <div class="exam-room-tips">
           <p class="tips-title">温馨提示</p>
-          <p class="tips-content"></p>
+          <div class="tips-schedule">
+            <p class="tips-schedule-title">新生素养测试时间安排（2026-8-1 周六）</p>
+            <table class="tips-table">
+              <tr><td class="tips-time">上午 8:00—9:30</td><td>语文</td></tr>
+              <tr><td class="tips-time">10:00—11:20</td><td>数学</td></tr>
+              <tr><td class="tips-time">中午 11:20—12:20</td><td>分批1号食堂就餐</td></tr>
+              <tr><td class="tips-time">12:20—13:20</td><td>教室休息</td></tr>
+              <tr><td class="tips-time">下午 13:40—15:00</td><td>英语（不考听力）</td></tr>
+              <tr><td class="tips-time">15:30—16:50</td><td>科学（物理、化学）</td></tr>
+            </table>
+          </div>
+          <div class="tips-text">
+            <p class="tips-section-title">一、考前物资规范准备</p>
+            <p>1. 必备文具：透明考试文具袋，蓝黑色签字笔、2B铅笔、橡皮、直尺、圆规等；如需计时仅可佩戴指针式手表。</p>
+            <p>2. 严禁携带：手机、电子手环、智能手表、智能眼镜等无线通讯及电子存储设备，涂改液、修正带、计算器。发现携带手机等设备，无论是否使用，一律按作弊处理。</p>
+            <p class="tips-section-title">二、考场作答流程须知</p>
+            <p>1. 至少提前15分钟入场，接受安检，落座后不喧哗、不随意走动。</p>
+            <p>2. 开考前5分钟分发试卷，第一时间填写姓名、准考证号，规范填涂；如有缺页漏印立刻举手申请更换。</p>
+            <p>3. 看清答题卡对应区域，切勿答错题号。终考铃响立刻停笔，等候监考老师收齐材料后方可离场。</p>
+            <p class="tips-section-title">三、严守诚信底线</p>
+            <p>考场全程视频监控。作弊行为（携带资料/电子设备、偷看抄袭、传递试卷、代考等）全部科目成绩作废，记入个人在校诚信档案。</p>
+          </div>
         </div>
         <div class="exam-room-actions">
           <button class="btn-download-pdf" @click="downloadExamTicketPDF">
@@ -305,10 +326,7 @@ const examRoomLoading = ref(false)
 const examRoomError = ref('')
 const examRoomData = ref(null)
 
-/**
- * 获取准考证信息
- * 点击准考证按钮时触发，调用 GET /exam-room/my
- */
+/** 获取准考证信息 */
 async function fetchExamRoom() {
   examRoomLoading.value = true
   examRoomError.value = ''
@@ -327,40 +345,48 @@ async function fetchExamRoom() {
   }
 }
 
-// 监听 showExamRoom 变化，弹窗打开时自动请求数据
-watch(showExamRoom, (val) => {
-  if (val) {
-    fetchExamRoom()
-  }
-})
+watch(showExamRoom, (val) => { if (val) fetchExamRoom() })
 
-/**
- * 下载准考证 PDF
- * 使用 html2canvas 渲染 + jsPDF 生成，确保中文正常显示
- */
+/** 下载准考证 PDF — 左上信息 + 右上时间表 + 下方温馨提示 */
 async function downloadExamTicketPDF() {
   if (!examRoomData.value) return
   const d = examRoomData.value
 
-  // 创建临时渲染容器
   const container = document.createElement('div')
   container.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;'
   container.innerHTML = `
-    <div style="padding:30px 25px;box-sizing:border-box;">
-      <h2 style="text-align:center;color:#1890ff;font-size:22px;margin:0 0 8px 0;">准考证</h2>
-      <div style="height:2px;background:#1890ff;margin:0 0 20px 0;"></div>
-      <table style="width:100%;border-collapse:collapse;font-size:15px;">
-        <tr><td style="padding:10px 0;color:#888;width:80px;">姓名</td><td style="padding:10px 0;color:#333;">${d.student_name}</td></tr>
-        <tr><td style="padding:10px 0;color:#888;">准考证号</td><td style="padding:10px 0;color:#333;">${d.admission_number}</td></tr>
-        <tr><td style="padding:10px 0;color:#888;">考场</td><td style="padding:10px 0;color:#1890ff;font-size:18px;font-weight:bold;">${d.exam_room}</td></tr>
-        <tr><td style="padding:10px 0;color:#888;">座位号</td><td style="padding:10px 0;color:#1890ff;font-size:18px;font-weight:bold;">${d.seat_number}</td></tr>
-      </table>
-      <div style="height:1px;background:#e0e0e0;margin:10px 0;"></div>
-      <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:6px;padding:10px 12px;margin:12px 0;">
-        <p style="font-size:13px;font-weight:bold;color:#d48806;margin:0 0 4px 0;">温馨提示</p>
-        <p style="font-size:12px;color:#8c6d1f;margin:0;line-height:1.6;"></p>
+    <div style="padding:24px 22px;box-sizing:border-box;">
+      <h2 style="text-align:center;color:#1890ff;font-size:20px;margin:0 0 6px 0;">准考证</h2>
+      <div style="height:2px;background:#1890ff;margin:0 0 14px 0;"></div>
+      <div style="display:flex;gap:18px;">
+        <div style="flex:1;min-width:0;">
+          <table style="width:100%;font-size:13px;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:#888;width:56px;">姓名</td><td style="padding:6px 0;color:#333;">${d.student_name}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">准考证号</td><td style="padding:6px 0;color:#333;">${d.admission_number}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">考场</td><td style="padding:6px 0;color:#1890ff;font-size:16px;font-weight:bold;">${d.exam_room}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">座位号</td><td style="padding:6px 0;color:#1890ff;font-size:16px;font-weight:bold;">${d.seat_number}</td></tr>
+          </table>
+        </div>
+        <div style="flex:1;min-width:0;border-left:1px solid #e0e0e0;padding-left:14px;">
+          <p style="font-size:12px;font-weight:bold;color:#1890ff;margin:0 0 6px 0;">测试时间安排（2026-8-1 周六）</p>
+          <table style="width:100%;font-size:11px;border-collapse:collapse;">
+            <tr><td style="padding:3px 0;color:#555;">8:00—9:30</td><td style="padding:3px 0;color:#333;">语文</td></tr>
+            <tr><td style="padding:3px 0;color:#555;">10:00—11:20</td><td style="padding:3px 0;color:#333;">数学</td></tr>
+            <tr><td style="padding:3px 0;color:#555;">11:20—12:20</td><td style="padding:3px 0;color:#333;">1号食堂就餐</td></tr>
+            <tr><td style="padding:3px 0;color:#555;">12:20—13:20</td><td style="padding:3px 0;color:#333;">教室休息</td></tr>
+            <tr><td style="padding:3px 0;color:#555;">13:40—15:00</td><td style="padding:3px 0;color:#333;">英语（不考听力）</td></tr>
+            <tr><td style="padding:3px 0;color:#555;">15:30—16:50</td><td style="padding:3px 0;color:#333;">科学（物化）</td></tr>
+          </table>
+        </div>
       </div>
-      <p style="text-align:center;font-size:10px;color:#bbb;margin:20px 0 0 0;">本准考证由系统自动生成</p>
+      <div style="height:1px;background:#e0e0e0;margin:12px 0;"></div>
+      <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:8px 10px;margin:0 0 10px 0;">
+        <p style="font-size:11px;font-weight:bold;color:#d48806;margin:0 0 4px 0;">温馨提示</p>
+        <p style="font-size:10px;color:#8c6d1f;margin:0 0 3px 0;line-height:1.5;"><b>一、考前准备：</b>透明文具袋，蓝黑色签字笔、2B铅笔、橡皮、直尺、圆规；仅可佩戴指针式手表。严禁携带手机、电子手环、智能手表等无线通讯设备及涂改液、修正带、计算器，发现一律按作弊处理。</p>
+        <p style="font-size:10px;color:#8c6d1f;margin:0 0 3px 0;line-height:1.5;"><b>二、考场流程：</b>提前15分钟入场安检；开考前5分钟分发试卷，立即填写姓名、准考证号并规范填涂；看清答题卡对应区域，勿答错题号；终考铃响立即停笔，等候收卷。</p>
+        <p style="font-size:10px;color:#8c6d1f;margin:0;line-height:1.5;"><b>三、诚信考试：</b>全程视频监控。作弊行为（携带资料/电子设备、偷看抄袭、传递试卷、代考等）全部科目成绩作废，记入在校诚信档案。</p>
+      </div>
+      <p style="text-align:center;font-size:9px;color:#bbb;margin:0;">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
     </div>
   `
   document.body.appendChild(container)
@@ -368,12 +394,10 @@ async function downloadExamTicketPDF() {
   try {
     const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
     const imgData = canvas.toDataURL('image/png')
-
-    const pdfW = 210 // A4 width in mm
+    const pdfW = 210
     const pdfH = (canvas.height * pdfW) / canvas.width
-
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    doc.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH)
+    doc.addImage(imgData, 'PNG', 0, 0, pdfW, Math.min(pdfH, 297))
     doc.save(`准考证_${d.student_name}.pdf`)
   } finally {
     document.body.removeChild(container)
@@ -748,23 +772,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   color: #fff;
 }
 
-/* 准考证按钮：蓝底白字（与白底蓝字的功能按钮相反） */
-.btn-exam-ticket {
-  font-size: 12px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  background: #1890ff;
-  color: #fff;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: 1px solid #1890ff;
-}
-.btn-exam-ticket:hover {
-  background: #40a9ff;
-  border-color: #40a9ff;
-  color: #fff;
-}
-
 /* 公告红点 */
 .announcement-link {
   position: relative;
@@ -879,6 +886,132 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   color: #333;
 }
 
+/* ====== 准考证按钮（蓝底白字） ====== */
+.btn-exam-ticket {
+  font-size: 12px;
+  padding: 3px 10px;
+  border: 1px solid #1890ff;
+  border-radius: 4px;
+  background: #1890ff;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btn-exam-ticket:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  color: #fff;
+}
+
+/* ====== 准考证弹窗 ====== */
+.exam-room-card {
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.exam-room-loading,
+.exam-room-error {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #999;
+}
+.exam-room-error { color: #ff4d4f; }
+.exam-room-body { margin-top: 12px; }
+.exam-room-info {
+  background: #f0f7ff;
+  border: 1px solid #b3d8ff;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.exam-room-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+.exam-room-row + .exam-room-row { border-top: 1px solid #d9ecff; }
+.exam-room-label {
+  font-size: 13px;
+  color: #888;
+  width: 64px;
+  flex-shrink: 0;
+}
+.exam-room-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+.exam-room-value.highlight {
+  color: #1890ff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 温馨提示 */
+.exam-room-tips {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.tips-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d48806;
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+.tips-schedule { margin-bottom: 10px; }
+.tips-schedule-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ad6800;
+  margin: 0 0 4px 0;
+}
+.tips-table {
+  width: 100%;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+.tips-table td {
+  padding: 2px 4px;
+  border-bottom: 1px solid #f5daa0;
+}
+.tips-time { color: #ad6800; font-weight: 500; }
+.tips-text { font-size: 11px; color: #8c6d1f; line-height: 1.6; }
+.tips-text p { margin: 0 0 3px 0; }
+.tips-section-title {
+  font-weight: 600;
+  color: #ad6800;
+  margin: 6px 0 2px 0 !important;
+}
+
+/* 下载按钮 */
+.exam-room-actions {
+  text-align: center;
+  margin-top: 4px;
+}
+.btn-download-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1890ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-download-pdf:hover { background: #40a9ff; }
+.icon-download { vertical-align: middle; }
+
 /* ====== 强制弹窗公告样式 ====== */
 .popup-modal-overlay {
   z-index: 1000;
@@ -935,101 +1068,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   color: #fa8c16;
 }
 
-/* ====== 准考证弹窗样式 ====== */
-.exam-room-card {
-  max-width: 360px;
-}
-.exam-room-loading {
-  text-align: center;
-  padding: 20px;
-  color: #999;
-  font-size: 14px;
-}
-.exam-room-error {
-  color: #ff4d4f;
-  font-size: 14px;
-  text-align: center;
-  padding: 20px;
-}
-.exam-room-body {
-  padding: 8px 0;
-}
-.exam-room-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.exam-room-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-}
-.exam-room-row:last-child {
-  border-bottom: none;
-}
-.exam-room-label {
-  font-size: 14px;
-  color: #666;
-}
-.exam-room-value {
-  font-size: 15px;
-  color: #333;
-  font-weight: 500;
-}
-.exam-room-value.highlight {
-  color: #1890ff;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-/* 温馨提示 */
-.exam-room-tips {
-  margin: 12px 16px 0;
-  padding: 12px;
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 6px;
-}
-.tips-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #d48806;
-  margin: 0 0 4px 0;
-}
-.tips-content {
-  font-size: 12px;
-  color: #8c6d1f;
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* 下载按钮 */
-.exam-room-actions {
-  padding: 12px 16px;
-  text-align: center;
-}
-.btn-download-pdf {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  background: #1890ff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-download-pdf:hover {
-  background: #40a9ff;
-}
-.icon-download {
-  flex-shrink: 0;
-}
-
 /* ====== 全局响应式：顶栏适配 ====== */
 @media (max-width: 600px) {
   .app-header { height: 44px; padding: 0 10px; }
@@ -1042,6 +1080,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   .role-tag { font-size: 10px; padding: 1px 5px; }
   .btn-changepw { display: none; }  /* 手机端隐藏改密按钮，用其他方式访问 */
   .btn-logout { font-size: 12px; padding: 3px 8px; }
+  .btn-exam-ticket { font-size: 11px; padding: 2px 6px; }
 }
 
 /* 超小屏：进一步精简 */
