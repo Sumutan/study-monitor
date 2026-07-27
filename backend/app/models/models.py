@@ -620,3 +620,25 @@ class LoginLog(Base):
     success = Column(Boolean, default=False, index=True, comment="是否登录成功")
     message = Column(String(200), default="", comment="结果消息")
     created_at = Column(DateTime, server_default=func.now(), index=True)
+
+
+class ExamRoom(Base):
+    """
+    考场安排模型
+
+    用途：存储学生考场安排信息，学生登录后可查询自己的座位号和考场。
+
+    字段说明：
+        id               — 自增主键
+        student_name     — 学生姓名
+        admission_number — 准考证号/学生学号（唯一索引）
+        seat_number      — 座位号
+        exam_room        — 考场名称（如"高一（1）班"）
+    """
+    __tablename__ = "exam_rooms"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    student_name = Column(String(50), nullable=False, comment="学生姓名")
+    admission_number = Column(String(50), unique=True, nullable=False, index=True, comment="准考证号/学生学号")
+    seat_number = Column(String(20), nullable=False, comment="座位号")
+    exam_room = Column(String(100), nullable=False, comment="考场名称")

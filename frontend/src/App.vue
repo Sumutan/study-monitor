@@ -44,6 +44,7 @@
       <router-link v-if="auth.user.value?.role === 'student'" to="/checkin" class="btn-feature-link">签到</router-link>
       <router-link to="/study-report" class="btn-feature-link">报告</router-link>
       <router-link to="/guide" class="btn-feature-link">指南</router-link>
+      <a v-if="auth.user.value?.role === 'student'" href="javascript:void(0)" class="btn-exam-ticket" @click="showExamRoom = true">准考证</a>
       <!-- 用户角色标签 -->
       <span class="role-tag" :class="auth.user.value?.role">{{ roleLabel }}</span>
       <!-- 用户姓名 -->
@@ -123,6 +124,38 @@
         <button class="btn-sm primary" @click="doBindAccount" :disabled="bindLoading">
           {{ bindLoading ? '绑定中...' : '确认绑定' }}
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 准考证弹窗 ====== -->
+  <div v-if="showExamRoom" class="modal-overlay" @click.self="showExamRoom = false">
+    <div class="modal-card exam-room-card">
+      <div class="modal-header">
+        <h3>准考证</h3>
+        <button class="btn-close" @click="showExamRoom = false" title="关闭">&times;</button>
+      </div>
+      <div v-if="examRoomLoading" class="exam-room-loading">加载中...</div>
+      <div v-else-if="examRoomError" class="exam-room-error">{{ examRoomError }}</div>
+      <div v-else-if="examRoomData" class="exam-room-body">
+        <div class="exam-room-info">
+          <div class="exam-room-row">
+            <span class="exam-room-label">姓名</span>
+            <span class="exam-room-value">{{ examRoomData.student_name }}</span>
+          </div>
+          <div class="exam-room-row">
+            <span class="exam-room-label">准考证号</span>
+            <span class="exam-room-value">{{ examRoomData.admission_number }}</span>
+          </div>
+          <div class="exam-room-row">
+            <span class="exam-room-label">座位号</span>
+            <span class="exam-room-value highlight">{{ examRoomData.seat_number }}</span>
+          </div>
+          <div class="exam-room-row">
+            <span class="exam-room-label">考场</span>
+            <span class="exam-room-value highlight">{{ examRoomData.exam_room }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -251,6 +284,41 @@ const bindAccountInput = ref('')
 const bindPasswordInput = ref('')
 const bindError = ref('')
 const bindLoading = ref(false)
+
+/** ============ 准考证弹窗状态 ============ */
+const showExamRoom = ref(false)
+const examRoomLoading = ref(false)
+const examRoomError = ref('')
+const examRoomData = ref(null)
+
+/**
+ * 获取准考证信息
+ * 点击准考证按钮时触发，调用 GET /exam-room/my
+ */
+async function fetchExamRoom() {
+  examRoomLoading.value = true
+  examRoomError.value = ''
+  examRoomData.value = null
+  try {
+    const res = await api.get('/exam-room/my')
+    if (res.data.code === 0) {
+      examRoomData.value = res.data.data
+    } else {
+      examRoomError.value = res.data.msg || '获取失败'
+    }
+  } catch (e) {
+    examRoomError.value = '网络异常，请稍后重试'
+  } finally {
+    examRoomLoading.value = false
+  }
+}
+
+// 监听 showExamRoom 变化，弹窗打开时自动请求数据
+watch(showExamRoom, (val) => {
+  if (val) {
+    fetchExamRoom()
+  }
+})
 
 /**
  * 关闭绑定弹窗，跳转到登录页用账号密码登录
@@ -620,6 +688,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   color: #fff;
 }
 
+/* 准考证按钮：蓝底白字（与白底蓝字的功能按钮相反） */
+.btn-exam-ticket {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #1890ff;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid #1890ff;
+}
+.btn-exam-ticket:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  color: #fff;
+}
+
 /* 公告红点 */
 .announcement-link {
   position: relative;
@@ -788,6 +873,55 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
 .priority-tag.important {
   background: #fff7e6;
   color: #fa8c16;
+}
+
+/* ====== 准考证弹窗样式 ====== */
+.exam-room-card {
+  max-width: 360px;
+}
+.exam-room-loading {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+  font-size: 14px;
+}
+.exam-room-error {
+  color: #ff4d4f;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+.exam-room-body {
+  padding: 8px 0;
+}
+.exam-room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.exam-room-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.exam-room-row:last-child {
+  border-bottom: none;
+}
+.exam-room-label {
+  font-size: 14px;
+  color: #666;
+}
+.exam-room-value {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+.exam-room-value.highlight {
+  color: #1890ff;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 /* ====== 全局响应式：顶栏适配 ====== */
