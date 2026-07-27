@@ -21,7 +21,7 @@ from fastapi.responses import FileResponse
 from app.config import get_settings
 from app.database import init_db
 from app.database_redis import close_redis
-from app.routers import auth, heartbeat, course, stats, notify, admin, homework, ops, section, announcement, feedback, agent, login_log
+from app.routers import auth, heartbeat, course, stats, notify, admin, homework, ops, section, announcement, feedback, agent, login_log, exam_room
 from app.services.agent_caller import close_http_client
 from app.services.scheduler import start_scheduler, stop_scheduler
 
@@ -150,6 +150,7 @@ app.include_router(announcement.router)
 app.include_router(feedback.router)
 app.include_router(agent.router)
 app.include_router(login_log.router)
+app.include_router(exam_room.router)
 
 
 @app.get("/api/health")
