@@ -44,7 +44,7 @@
       <router-link v-if="auth.user.value?.role === 'student'" to="/checkin" class="btn-feature-link">签到</router-link>
       <router-link to="/study-report" class="btn-feature-link">报告</router-link>
       <router-link to="/guide" class="btn-feature-link">指南</router-link>
-      <!-- <a v-if="auth.user.value?.role === 'student'" href="javascript:void(0)" class="btn-exam-ticket" @click="showExamRoom = true">准考证</a> -->
+      <a v-if="auth.user.value?.role === 'student'" href="javascript:void(0)" class="btn-exam-ticket" @click="showExamRoom = true">准考证</a>
       <!-- 用户角色标签 -->
       <span class="role-tag" :class="auth.user.value?.role">{{ roleLabel }}</span>
       <!-- 用户姓名 -->
@@ -171,14 +171,16 @@
           </div>
           <div class="tips-text">
             <p class="tips-section-title">一、考前物资规范准备</p>
-            <p>1. 必备文具：透明考试文具袋，蓝黑色签字笔、2B铅笔、橡皮、直尺、圆规等；如需计时仅可佩戴指针式手表。</p>
-            <p>2. 严禁携带：手机、电子手环、智能手表、智能眼镜等无线通讯及电子存储设备，涂改液、修正带、计算器。发现携带手机等设备，无论是否使用，一律按作弊处理。</p>
+            <p>1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴指针式手表入场。</p>
+            <p>2. 严禁带入学校的物品：手机、电子手环、智能手表、智能眼镜等一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
             <p class="tips-section-title">二、考场作答流程须知</p>
-            <p>1. 至少提前15分钟入场，接受安检，落座后不喧哗、不随意走动。</p>
-            <p>2. 开考前5分钟分发试卷，第一时间填写姓名、准考证号，规范填涂；如有缺页漏印立刻举手申请更换。</p>
-            <p>3. 看清答题卡对应区域，切勿答错题号。终考铃响立刻停笔，等候监考老师收齐材料后方可离场。</p>
-            <p class="tips-section-title">三、严守诚信底线</p>
-            <p>考场全程视频监控。作弊行为（携带资料/电子设备、偷看抄袭、传递试卷、代考等）全部科目成绩作废，记入个人在校诚信档案。</p>
+            <p>1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
+            <p>2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料第一时间填写姓名、准考证号，规范填涂准考证号；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
+            <p>3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐试卷、答题卡、草稿纸后方可离场，不拖延、不续答。</p>
+            <p class="tips-section-title">三、严守诚信底线，明晰违纪作弊后果</p>
+            <p>考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
+            <p>1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
+            <p>2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
           </div>
         </div>
         <div class="exam-room-actions">
@@ -382,14 +384,14 @@ async function downloadExamTicketPDF() {
         </div>
       </div>
       <div style="height:1px;background:#bbb;margin:12px 0;"></div>
-      <p style="font-size:14px;font-weight:bold;color:#000;text-align:center;margin:0 0 8px 0;">素养测试诚信考试温馨提示</p>
+      <p style="font-size:14px;font-weight:bold;color:#000;text-align:center;margin:0 0 8px 0;">素养测试温馨提示</p>
       <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">一、考前物资规范准备</p>
-      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴指针式手表入场。</p>
-      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 严禁带入学校的物品：手机、电子手环、智能手表、智能眼镜等一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴<span style="font-weight:bold;text-decoration:underline;">指针式手表</span>入场。</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 严禁带入学校的物品：<span style="font-weight:bold;text-decoration:underline;">手机、电子手环、智能手表、智能眼镜等</span>一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
       <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">二、考场作答流程须知</p>
       <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
-      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料第一时间填写姓名、准考证号，规范填涂准考证号；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
-      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐试卷、答题卡、草稿纸后方可离场，不拖延、不续答。</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料<span style="font-weight:bold;text-decoration:underline;">第一时间填写姓名、准考证号，规范填涂准考证号</span>；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
+      <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐<span style="font-weight:bold;text-decoration:underline;">试卷、答题卡、草稿纸</span>后方可离场，不拖延、不续答。</p>
       <p style="font-size:13px;font-weight:bold;color:#000;margin:0 0 4px 0;">三、严守诚信底线，明晰违纪作弊后果</p>
       <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
       <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
