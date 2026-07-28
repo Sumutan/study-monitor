@@ -364,6 +364,7 @@ async function downloadExamTicketPDF() {
           <table style="width:100%;font-size:13px;border-collapse:collapse;">
             <tr><td style="padding:5px 0;color:#555;width:60px;">姓名</td><td style="padding:5px 0;color:#000;">${d.student_name}</td></tr>
             <tr><td style="padding:5px 0;color:#555;">准考证号</td><td style="padding:5px 0;color:#000;">${d.admission_number}</td></tr>
+            <tr><td style="padding:5px 0;color:#555;">楼幢</td><td style="padding:5px 0;color:#000;">B幢教学楼</td></tr>
             <tr><td style="padding:5px 0;color:#555;">考场</td><td style="padding:5px 0;color:#000;">${d.exam_room}</td></tr>
             <tr><td style="padding:5px 0;color:#555;">座位号</td><td style="padding:5px 0;color:#000;">${d.seat_number}</td></tr>
           </table>
@@ -394,7 +395,6 @@ async function downloadExamTicketPDF() {
       <p style="font-size:12px;color:#000;margin:0 0 4px 0;line-height:1.8;">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
       <p style="font-size:12px;color:#000;margin:0;line-height:1.8;">2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
       <div style="height:1px;background:#bbb;margin:10px 0;"></div>
-      <p style="font-size:12px;font-weight:bold;color:#000;text-align:center;margin:0 0 6px 0;">考场座位安排示意图</p>
       <img src="${seatMapImg}" style="display:block;width:40%;max-width:40%;margin:0 auto 10px auto;border:1px solid #000;" />
       <div style="height:1px;background:#bbb;margin:6px 0;"></div>
       <p style="text-align:center;font-size:10px;color:#888;margin:0;">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
