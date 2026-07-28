@@ -1,6 +1,8 @@
 -- 考场安排数据导入
 -- 自动生成自 学生考场安排.xlsx
 
+SET NAMES utf8mb4;
+
 DROP TABLE IF EXISTS `exam_rooms`;
 CREATE TABLE `exam_rooms` (
   `id` bigint NOT NULL AUTO_INCREMENT,
