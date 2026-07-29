@@ -44,7 +44,7 @@
       <router-link v-if="auth.user.value?.role === 'student'" to="/checkin" class="btn-feature-link">签到</router-link>
       <router-link to="/study-report" class="btn-feature-link">报告</router-link>
       <router-link to="/guide" class="btn-feature-link">指南</router-link>
-      <!-- <a v-if="auth.user.value?.role === 'student'" href="javascript:void(0)" class="btn-exam-ticket" @click="showExamRoom = true">准考证</a> -->
+      <a v-if="auth.user.value?.role === 'student'" href="javascript:void(0)" class="btn-exam-ticket" @click="showExamRoom = true">准考证</a>
       <!-- 用户角色标签 -->
       <span class="role-tag" :class="auth.user.value?.role">{{ roleLabel }}</span>
       <!-- 用户姓名 -->
