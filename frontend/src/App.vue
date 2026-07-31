@@ -128,8 +128,8 @@
     </div>
   </div>
 
-  <!-- ====== 准考证弹窗 ====== -->
-  <div v-if="showExamRoom" class="modal-overlay" @click.self="showExamRoom = false">
+  <!-- ====== 准考证弹窗（桌面端） ====== -->
+  <div v-if="showExamRoom && !isMobile" class="modal-overlay" @click.self="showExamRoom = false">
     <div class="modal-card exam-room-card">
       <div class="modal-header">
         <h3>准考证</h3>
@@ -191,6 +191,66 @@
             下载准考证
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 准考证全屏页（手机端，与 PDF 布局完全一致） ====== -->
+  <div v-if="showExamRoom && isMobile" class="exam-room-fullpage">
+    <div class="exam-room-pdf-header">
+      <button class="btn-close" @click="showExamRoom = false" title="关闭">&times;</button>
+    </div>
+    <div v-if="examRoomLoading" class="exam-room-loading">加载中...</div>
+    <div v-else-if="examRoomError" class="exam-room-error">{{ examRoomError }}</div>
+    <div v-else-if="examRoomData" class="exam-room-pdf-body">
+      <h2 class="pdf-title">2026级新生素养测试准考证</h2>
+      <div class="pdf-divider-thick"></div>
+      <div class="pdf-twocol">
+        <div class="pdf-left">
+          <table class="pdf-info-table">
+            <tr><td class="pdf-label">姓名</td><td class="pdf-value">{{ examRoomData.student_name }}</td></tr>
+            <tr><td class="pdf-label">准考证号</td><td class="pdf-value">{{ examRoomData.admission_number }}</td></tr>
+            <tr><td class="pdf-label">楼幢</td><td class="pdf-value">B幢教学楼</td></tr>
+            <tr><td class="pdf-label">考场</td><td class="pdf-value">{{ examRoomData.exam_room }}</td></tr>
+            <tr><td class="pdf-label">座位号</td><td class="pdf-value">{{ examRoomData.seat_number }}</td></tr>
+          </table>
+        </div>
+        <div class="pdf-right">
+          <p class="pdf-schedule-title">测试时间安排（2026-8-1 周六）</p>
+          <table class="pdf-schedule-table">
+            <tr><td class="pdf-time">8:00—9:30</td><td>语文</td></tr>
+            <tr><td class="pdf-time">10:00—11:20</td><td>数学</td></tr>
+            <tr><td class="pdf-time">11:20—12:20</td><td>分批1号食堂就餐</td></tr>
+            <tr><td class="pdf-time">12:20—13:20</td><td>教室休息</td></tr>
+            <tr><td class="pdf-time">13:40—15:00</td><td>英语（不考听力）</td></tr>
+            <tr><td class="pdf-time">15:30—16:50</td><td>科学（物理、化学）</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="pdf-divider"></div>
+      <p class="pdf-tips-main-title">素养测试温馨提示</p>
+      <p class="pdf-tips-section">一、考前物资规范准备</p>
+      <p class="pdf-tips-text">1. 必备文具提前备齐：请准备透明考试文具袋，携带蓝黑色签字笔、标准2B铅笔、橡皮、直尺、圆规等答题工具；如需计时，仅可佩戴<u>指针式手表</u>入场。</p>
+      <p class="pdf-tips-text">2. 严禁带入学校的物品：<u>手机、电子手环、智能手表、智能眼镜等</u>一切无线通讯、电子存储设备，涂改液、修正带、计算器均禁止带入考场。如若发现携带手机等无线通讯、电子存储设备，无论是否使用，一律按作弊处理。</p>
+      <p class="pdf-tips-section">二、考场作答流程须知</p>
+      <p class="pdf-tips-text">1. 请至少提前15分钟进入考场，在考场门口听从工作人员指挥，接受安检，落座后不喧哗、不随意走动；</p>
+      <p class="pdf-tips-text">2. 开考前5分钟监考老师分发试卷、答题卡与草稿纸，拿到材料<u>第一时间填写姓名、准考证号，规范填涂准考证号</u>；仔细翻看试卷，若出现缺页、漏印、破损，立刻举手向监考老师申请更换；</p>
+      <p class="pdf-tips-text">3. 作答前看清答题卡对应答题区域，切勿答错题号。终考铃声响起，请立刻放下笔停止作答，等候监考老师统一收齐<u>试卷、答题卡、草稿纸</u>后方可离场，不拖延、不续答。</p>
+      <p class="pdf-tips-section">三、严守诚信底线，明晰违纪作弊后果</p>
+      <p class="pdf-tips-text">考场全程开启视频监控，所有行为全程留存记录，任何弄虚作假行为都会严肃处理：</p>
+      <p class="pdf-tips-text">1. 认定为作弊的行为：携带复习资料、电子设备入场；偷看、抄袭他人答案；传递试卷、草稿纸；交换文具互通答案；由他人代考、故意损毁试卷、答题卡、填错个人身份信息等，均直接判定为考试作弊。</p>
+      <p class="pdf-tips-text">2. 作弊处理规定：凡本次学科素养测试作弊，全部科目成绩作废，记入个人在校诚信档案。</p>
+      <div class="pdf-divider"></div>
+      <img :src="seatMapImg" class="pdf-seat-map" />
+      <div class="pdf-divider"></div>
+      <p class="pdf-footer">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
+      <div class="pdf-download-area">
+        <button class="btn-download-pdf" @click="downloadExamTicketPDF">
+          <svg class="icon-download" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          下载准考证
+        </button>
       </div>
     </div>
   </div>
@@ -328,6 +388,10 @@ const showExamRoom = ref(false)
 const examRoomLoading = ref(false)
 const examRoomError = ref('')
 const examRoomData = ref(null)
+
+/** 手机端检测：宽度 ≤ 600px 视为手机 */
+const isMobile = ref(window.innerWidth <= 600)
+window.addEventListener('resize', () => { isMobile.value = window.innerWidth <= 600 })
 
 /** 获取准考证信息 */
 async function fetchExamRoom() {
@@ -923,6 +987,68 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
   max-height: 85vh;
   overflow-y: auto;
 }
+
+/* 手机端：全屏页面（与 PDF 布局完全一致） */
+.exam-room-fullpage {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #fff; z-index: 200;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: #000;
+}
+.exam-room-pdf-header {
+  display: flex; justify-content: flex-end;
+  padding: 8px 12px 0 0;
+  flex-shrink: 0;
+}
+.exam-room-pdf-body {
+  padding: 0 24px 40px 24px;
+  flex: 1;
+}
+/* PDF 标题 */
+.pdf-title {
+  text-align: center; font-size: 18px; font-weight: 700;
+  margin: 0 0 6px 0; color: #000;
+}
+/* 分割线 */
+.pdf-divider-thick { height: 2px; background: #000; margin: 0 0 12px 0; }
+.pdf-divider { height: 1px; background: #bbb; margin: 10px 0; }
+/* 双栏布局 */
+.pdf-twocol { display: flex; gap: 14px; align-items: stretch; }
+.pdf-left { flex: 1; min-width: 0; }
+.pdf-right {
+  flex: 1; min-width: 0;
+  border-left: 1px solid #bbb; padding-left: 12px;
+  display: flex; flex-direction: column;
+}
+/* 信息表 */
+.pdf-info-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+.pdf-info-table td { padding: 4px 0; }
+.pdf-label { color: #555; width: 50px; font-size: 12px; }
+.pdf-value { color: #000; font-size: 12px; }
+/* 时间表 */
+.pdf-schedule-title { font-size: 12px; font-weight: 700; margin: 3px 0 5px 0; }
+.pdf-schedule-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.pdf-schedule-table td { padding: 4px 0; }
+.pdf-time { color: #555; }
+/* 温馨提示 */
+.pdf-tips-main-title {
+  font-size: 13px; font-weight: 700; text-align: center; margin: 0 0 6px 0;
+}
+.pdf-tips-section { font-size: 12px; font-weight: 700; margin: 0 0 3px 0; }
+.pdf-tips-text { font-size: 11px; margin: 0 0 3px 0; line-height: 1.7; }
+/* 座位图 */
+.pdf-seat-map {
+  display: block; width: 40%; max-width: 40%;
+  margin: 0 auto 8px auto; border: 1px solid #000;
+}
+/* 页脚 */
+.pdf-footer {
+  text-align: center; font-size: 9px; color: #888; margin: 0;
+}
+/* 下载按钮区域 */
+.pdf-download-area { text-align: center; margin-top: 14px; }
 .exam-room-loading,
 .exam-room-error {
   text-align: center;
