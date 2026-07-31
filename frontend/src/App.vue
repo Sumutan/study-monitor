@@ -1038,6 +1038,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
 }
 .pdf-tips-section { font-size: 12px; font-weight: 700; margin: 0 0 3px 0; }
 .pdf-tips-text { font-size: 11px; margin: 0 0 3px 0; line-height: 1.7; }
+.pdf-tips-text u { font-weight: bold; }  /* 与 PDF 保持一致：加粗+下划线 */
 /* 座位图 */
 .pdf-seat-map {
   display: block; width: 40%; max-width: 40%;
