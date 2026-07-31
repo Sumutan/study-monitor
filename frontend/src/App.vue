@@ -244,14 +244,6 @@
       <img :src="seatMapImg" class="pdf-seat-map" />
       <div class="pdf-divider"></div>
       <p class="pdf-footer">温州市第二十二中学教学服务处 · 本准考证由系统自动生成</p>
-      <div class="pdf-download-area">
-        <button class="btn-download-pdf" @click="downloadExamTicketPDF">
-          <svg class="icon-download" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-          </svg>
-          下载准考证
-        </button>
-      </div>
     </div>
   </div>
 
@@ -1048,8 +1040,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft
 .pdf-footer {
   text-align: center; font-size: 9px; color: #888; margin: 0;
 }
-/* 下载按钮区域 */
-.pdf-download-area { text-align: center; margin-top: 14px; }
 .exam-room-loading,
 .exam-room-error {
   text-align: center;
