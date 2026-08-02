@@ -61,6 +61,7 @@ from app.services.image_stitcher import image_url_to_local_path
 from app.utils.datetime_helper import now_cn_naive, parse_cn_datetime_input
 
 from app.utils.jwt_helper import get_current_user, require_role
+from app.utils.image_compress import compress_image_on_upload
 
 router = APIRouter(prefix="/api/homework", tags=["作业管理"])
 settings = get_settings()
@@ -652,6 +653,18 @@ async def upload_homework_image(
     content = await file.read()
     with open(filepath, "wb") as f:
         f.write(content)
+
+    # 上传后自动压缩图片（JPEG q90 + 最长边4096px + 去EXIF）
+    try:
+        abs_path = os.path.abspath(filepath)
+        result = compress_image_on_upload(abs_path)
+        if result.get("compressed"):
+            orig_kb = result.get("orig_kb", 0)
+            new_kb = result.get("new_kb", 0)
+            ratio = result.get("ratio", 0)
+            logger.info(f"[upload] {filename} compressed: {orig_kb:.0f}KB -> {new_kb:.0f}KB (-{ratio:.0f}%)")
+    except Exception as e:
+        logger.warning(f"[upload] {filename} compress failed: {e}")
 
     return {"code": 0, "data": {"url": f"/uploads/homework/{filename}"}}
 
