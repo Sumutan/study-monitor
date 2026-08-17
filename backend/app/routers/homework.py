@@ -61,7 +61,7 @@ from app.services.image_stitcher import image_url_to_local_path
 from app.utils.datetime_helper import now_cn_naive, parse_cn_datetime_input
 
 from app.utils.jwt_helper import get_current_user, require_role
-from app.utils.image_compress import compress_image_on_upload
+from app.utils.image_compress import compress_image_bytes
 
 router = APIRouter(prefix="/api/homework", tags=["作业管理"])
 settings = get_settings()
@@ -651,20 +651,18 @@ async def upload_homework_image(
 
     os.makedirs(HOMEWORK_UPLOAD_DIR, exist_ok=True)
     content = await file.read()
-    with open(filepath, "wb") as f:
-        f.write(content)
 
-    # 上传后自动压缩图片（JPEG q90 + 最长边4096px + 去EXIF）
+    # 压缩后再落盘（JPEG q85；200KB以下或非JPG/PNG 原样保留）
     try:
-        abs_path = os.path.abspath(filepath)
-        result = compress_image_on_upload(abs_path)
-        if result.get("compressed"):
-            orig_kb = result.get("orig_kb", 0)
-            new_kb = result.get("new_kb", 0)
-            ratio = result.get("ratio", 0)
-            logger.info(f"[upload] {filename} compressed: {orig_kb:.0f}KB -> {new_kb:.0f}KB (-{ratio:.0f}%)")
+        res = compress_image_bytes(content)
+        if res.get("compressed"):
+            logger.info(f"[upload] {filename} compressed: {res['orig_kb']:.0f}KB -> {res['new_kb']:.0f}KB (-{res.get('ratio', 0)}%)")
+        content = res["content"]
     except Exception as e:
         logger.warning(f"[upload] {filename} compress failed: {e}")
+
+    with open(filepath, "wb") as f:
+        f.write(content)
 
     return {"code": 0, "data": {"url": f"/uploads/homework/{filename}"}}
 
@@ -687,6 +685,13 @@ async def upload_question_file(
     filepath = os.path.join(QUESTION_UPLOAD_DIR, filename)
 
     content = await file.read()
+    # 图片类压缩后再落盘（PDF/DOC/DOCX 文档保持原样）
+    if ext in [".jpg", ".jpeg", ".png"]:
+        try:
+            content = compress_image_bytes(content)["content"]
+        except Exception as e:
+            logger.warning(f"[upload-question] {filename} compress failed: {e}")
+
     with open(filepath, "wb") as f:
         f.write(content)
 
@@ -711,6 +716,13 @@ async def upload_answer_file(
     filepath = os.path.join(ANSWER_UPLOAD_DIR, filename)
 
     content = await file.read()
+    # 图片类压缩后再落盘（PDF/DOC/DOCX 文档保持原样）
+    if ext in [".jpg", ".jpeg", ".png"]:
+        try:
+            content = compress_image_bytes(content)["content"]
+        except Exception as e:
+            logger.warning(f"[upload-answer] {filename} compress failed: {e}")
+
     with open(filepath, "wb") as f:
         f.write(content)
 

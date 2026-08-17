@@ -31,6 +31,7 @@ API 列表：
 """
 
 import json
+import logging
 import os
 import uuid
 
@@ -42,8 +43,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.models import Announcement, AnnouncementRead, Course, User
 from app.utils.jwt_helper import get_current_user, require_role
+from app.utils.image_compress import compress_image_bytes
 
 router = APIRouter(prefix="/api/announcements", tags=["公告管理"])
+logger = logging.getLogger(__name__)
 
 ANNOUNCEMENT_UPLOAD_DIR = "uploads/announcements"
 ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
@@ -214,6 +217,13 @@ async def upload_announcement_image(
     filename = f"{uuid.uuid4().hex}{ext}"
     os.makedirs(ANNOUNCEMENT_UPLOAD_DIR, exist_ok=True)
     filepath = os.path.join(ANNOUNCEMENT_UPLOAD_DIR, filename)
+
+    # 图片类压缩后再落盘（JPEG q85；gif/webp/小图 原样保留）
+    if ext in [".jpg", ".jpeg", ".png"]:
+        try:
+            content = compress_image_bytes(content)["content"]
+        except Exception as e:
+            logger.warning(f"[announcement] {filename} compress failed: {e}")
 
     with open(filepath, "wb") as f:
         f.write(content)
