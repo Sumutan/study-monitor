@@ -19,9 +19,13 @@
     <div class="overview-header no-print">
       <h2 class="page-title">学习进度全览</h2>
       <div class="selector">
-        <select v-model="selectedCourseId" @change="loadAll" :disabled="loading">
+        <select v-model="selectedCourseId" @change="resetClassFilter" :disabled="loading">
           <option value="">请选择课程</option>
           <option v-for="c in courses" :key="c.id" :value="c.id">{{ c.title }}</option>
+        </select>
+        <select v-model="selectedClass" @change="loadAll" :disabled="loading" class="class-select">
+          <option value="">全部班级</option>
+          <option v-for="cn in classNames" :key="cn" :value="cn">{{ cn }}</option>
         </select>
       </div>
       <div class="header-actions">
@@ -117,6 +121,8 @@ const router = useRouter()
 const courses = ref([])
 const selectedCourseId = ref('')
 const allStudents = ref([])
+const classNames = ref([])   // 班级下拉选项（"全部班级" + 各班级）
+const selectedClass = ref('') // 当前选中班级，'' = 全部班级
 const overview = ref({ total_students: 0, completed_students: 0, section_count: 0 })
 const loading = ref(false)
 const exporting = ref(false)
@@ -135,7 +141,7 @@ function formatPct(rate) {
 
 /**
  * 拉取全部学生。
- * 后端 /stats/class-overview 单页最多100条(page_size<=100)。
+ * 后端 /stats/class-overview 支持 class_name 参数过滤，单页最多100条(page_size<=100)。
  * 优化：先取第1页获取 total_pages，其余页用 Promise.all 并行拉取，
  *       避免原先一页页串行等待造成 2~3 秒延迟。
  */
@@ -146,7 +152,11 @@ async function loadAll() {
   allStudents.value = []
   const pageSize = 100
   const courseId = selectedCourseId.value
-  const paramsOf = (page) => ({ course_id: courseId, page, page_size: pageSize, sort_by: 'name' })
+  const paramsOf = (page) => {
+    const p = { course_id: courseId, page, page_size: pageSize, sort_by: 'name' }
+    if (selectedClass.value) p.class_name = selectedClass.value // 班级过滤（后端已支持）
+    return p
+  }
   try {
     // 第1页：拿到 overview 和总页数
     const firstRes = await api.get('/stats/class-overview', { params: paramsOf(1) })
@@ -175,11 +185,22 @@ async function loadAll() {
       })
     }
     allStudents.value = pageResults.flat()
+    // 切到"全部班级"时，从全量数据聚合班级下拉选项
+    if (!selectedClass.value) {
+      const set = new Set(allStudents.value.map((s) => s.class_name).filter(Boolean))
+      classNames.value = [...set].sort((a, b) => a.localeCompare(b, 'zh'))
+    }
   } catch (e) {
     error.value = '加载失败: ' + (e?.message || '未知错误')
   } finally {
     loading.value = false
   }
+}
+
+/** 切换班级：重置为全部班级并重新加载（不带 class_name 全量拉取，用于重新聚合班级选项） */
+function resetClassFilter() {
+  selectedClass.value = ''
+  loadAll()
 }
 
 /** 加载课程列表（仅用于科目选择下拉） */
@@ -275,6 +296,10 @@ onMounted(() => {
   font-size: 14px;
   min-width: 260px;
   cursor: pointer;
+}
+.overview-header .selector select.class-select {
+  min-width: 150px;
+  margin-left: 8px;
 }
 .overview-header .header-actions {
   display: flex;
