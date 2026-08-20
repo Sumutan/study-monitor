@@ -268,6 +268,8 @@
               <option :value="20">20条/页</option>
               <option :value="50">50条/页</option>
             </select>
+            <!-- 全览：跳转到全览页展示该课程全部学生进度 -->
+            <button class="btn-sm primary" @click="goFullOverview">全览</button>
           </div>
         </div>
       </div>
@@ -535,6 +537,12 @@ function onFilterChange() {
 function goPage(p) {
   currentPage.value = p
   loadData()
+}
+
+/** 跳转到全览页：展示当前课程全部学生进度 */
+function goFullOverview() {
+  if (!selectedCourseId.value) return
+  router.push(`/full-overview/${selectedCourseId.value}`)
 }
 
 /** 加载班级列表 */
