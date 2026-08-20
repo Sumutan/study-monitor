@@ -85,6 +85,13 @@ const routes = [
     meta: { title: '学习统计', role: 'teacher' },  // 仅教师/管理员
   },
   {
+    // 学习进度全览：一次性展示指定课程全部学生进度，支持导出Excel/PDF
+    path: '/full-overview/:courseId?',
+    name: 'FullOverview',
+    component: () => import('../views/FullOverview.vue'),
+    meta: { title: '学习进度全览', role: 'teacher' },  // 仅教师/管理员
+  },
+  {
     path: '/course-edit/:courseId?',  // courseId 可选：无参=新建课程，有参=编辑课程
     name: 'CourseEdit',
     component: () => import('../views/CourseEdit.vue'),
