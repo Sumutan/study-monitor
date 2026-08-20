@@ -1173,7 +1173,14 @@ tr.clickable:hover { background: #f0f7ff; }
   margin-top: 12px; flex-wrap: wrap; gap: 8px;
 }
 .page-info { font-size: 12px; color: #999; }
-.page-controls { display: flex; gap: 6px; align-items: center; }
+.page-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;         /* 按钮过多时自动换行，避免超出表格右边界 */
+  justify-content: flex-end;
+  max-width: 100%;
+}
 .page-size-select {
   padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px;
   font-size: 12px; cursor: pointer;

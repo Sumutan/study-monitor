@@ -15,19 +15,22 @@
 -->
 <template>
   <div class="full-overview">
+    <!-- 顶栏：标题(左对齐) + 科目选择(正中间) + 导出/返回(靠右) -->
     <div class="overview-header no-print">
       <h2 class="page-title">学习进度全览</h2>
+      <div class="selector">
+        <select v-model="selectedCourseId" @change="loadAll" :disabled="loading">
+          <option value="">请选择课程</option>
+          <option v-for="c in courses" :key="c.id" :value="c.id">{{ c.title }}</option>
+        </select>
+      </div>
       <div class="header-actions">
+        <button class="btn primary" :disabled="exporting" @click="exportExcel">
+          {{ exporting ? '导出中...' : '导出 Excel' }}
+        </button>
+        <button class="btn" @click="exportPdf">导出 PDF</button>
         <button class="btn back-btn" @click="goBack">返回看板</button>
       </div>
-    </div>
-
-    <!-- 课程选择 -->
-    <div class="selector no-print">
-      <select v-model="selectedCourseId" @change="loadAll" :disabled="loading">
-        <option value="">请选择课程</option>
-        <option v-for="c in courses" :key="c.id" :value="c.id">{{ c.title }}</option>
-      </select>
     </div>
 
     <div v-if="!selectedCourseId" class="empty">请选择一门课程查看全览</div>
@@ -99,14 +102,7 @@
         </div>
       </div>
 
-      <!-- 底部操作按钮 -->
-      <div class="actions no-print">
-        <button class="btn" :disabled="exporting" @click="exportExcel">
-          {{ exporting ? '导出中...' : '导出 Excel' }}
-        </button>
-        <button class="btn" @click="exportPdf">导出 PDF</button>
-      </div>
-    </template>
+      </template>
   </div>
 </template>
 
@@ -138,8 +134,10 @@ function formatPct(rate) {
 }
 
 /**
- * 循环拉取全部学生。
- * 后端 /stats/class-overview 单页最多100条(page_size<=100)，这里翻页把全部分页汇总。
+ * 拉取全部学生。
+ * 后端 /stats/class-overview 单页最多100条(page_size<=100)。
+ * 优化：先取第1页获取 total_pages，其余页用 Promise.all 并行拉取，
+ *       避免原先一页页串行等待造成 2~3 秒延迟。
  */
 async function loadAll() {
   if (!selectedCourseId.value) return
@@ -147,40 +145,58 @@ async function loadAll() {
   error.value = ''
   allStudents.value = []
   const pageSize = 100
+  const courseId = selectedCourseId.value
+  const paramsOf = (page) => ({ course_id: courseId, page, page_size: pageSize, sort_by: 'name' })
   try {
-    let page = 1
-    let totalPages = 1
-    let first = true
-    do {
-      const res = await api.get('/stats/class-overview', {
-        params: {
-          course_id: selectedCourseId.value,
-          page,
-          page_size: pageSize,
-          sort_by: 'name',
-        },
+    // 第1页：拿到 overview 和总页数
+    const firstRes = await api.get('/stats/class-overview', { params: paramsOf(1) })
+    if (firstRes.data.code !== 0) {
+      error.value = firstRes.data.message || '加载失败'
+      return
+    }
+    const firstData = firstRes.data.data
+    overview.value = {
+      total_students: firstData.total_students || 0,
+      completed_students: firstData.completed_students || 0,
+      section_count: firstData.section_count || 0,
+    }
+    const totalPages = firstData.pagination?.total_pages || 1
+    const pageResults = [firstData.students || []]
+
+    // 其余页并行拉取
+    if (totalPages > 1) {
+      const restRes = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, i) =>
+          api.get('/stats/class-overview', { params: paramsOf(i + 2) })
+        )
+      )
+      restRes.forEach((r) => {
+        if (r.data.code === 0) pageResults.push(r.data.data.students || [])
       })
-      if (res.data.code !== 0) {
-        error.value = res.data.message || '加载失败'
-        break
-      }
-      const data = res.data.data
-      if (first) {
-        overview.value = {
-          total_students: data.total_students || 0,
-          completed_students: data.completed_students || 0,
-          section_count: data.section_count || 0,
-        }
-        totalPages = data.pagination?.total_pages || 1
-        first = false
-      }
-      allStudents.value.push(...(data.students || []))
-      page += 1
-    } while (page <= totalPages)
+    }
+    allStudents.value = pageResults.flat()
   } catch (e) {
     error.value = '加载失败: ' + (e?.message || '未知错误')
   } finally {
     loading.value = false
+  }
+}
+
+/** 加载课程列表（仅用于科目选择下拉） */
+async function loadCourses() {
+  try {
+    const res = await api.get('/courses?status=active')
+    if (res.data.code === 0) {
+      courses.value = res.data.data || []
+      // 若尚未选定课程（路由未带 courseId），取默认课程
+      if (!selectedCourseId.value && courses.value.length > 0) {
+        const preferred = courses.value.find((c) => c.description && c.require_minutes >= 60)
+        selectedCourseId.value = preferred ? preferred.id : courses.value[0].id
+        await loadAll()
+      }
+    }
+  } catch (e) {
+    error.value = '课程加载失败: ' + (e?.message || '未知错误')
   }
 }
 
@@ -214,46 +230,59 @@ function exportPdf() {
   window.print()
 }
 
-onMounted(async () => {
-  try {
-    const res = await api.get('/courses?status=active')
-    if (res.data.code === 0) {
-      courses.value = res.data.data || []
-      // 优先使用路由传入的课程，否则选第一门
-      const raw = route.params.courseId
-      const valid = raw && courses.value.some(c => String(c.id) === String(raw))
-      if (valid) {
-        selectedCourseId.value = raw
-      } else if (courses.value.length > 0) {
-        const preferred = courses.value.find(c => c.description && c.require_minutes >= 60)
-        selectedCourseId.value = preferred ? preferred.id : courses.value[0].id
-      }
-      if (selectedCourseId.value) await loadAll()
-    }
-  } catch (e) {
-    error.value = '课程加载失败: ' + (e?.message || '未知错误')
+onMounted(() => {
+  const raw = route.params.courseId
+  if (raw) {
+    // 路由已带课程：立即加载数据 + 并行加载课程下拉，不等课程列表
+    selectedCourseId.value = raw
+    loadAll()
+    loadCourses()
+  } else {
+    // 无课程参数：先加载课程列表，再取默认课程并加载数据
+    loadCourses()
   }
 })
 </script>
 
 <style scoped>
+/* 根容器：与顶栏标题左对齐（顶栏 padding-left 16px） */
+.full-overview { padding: 16px; }
+
+/* 顶栏布局：标题(左) + 科目选择(正中间) + 导出/返回(靠右) */
 .overview-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
+}
+.overview-header .page-title {
+  font-size: 18px;               /* 比顶栏"在线学习平台"(16px)稍大 */
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+}
+.overview-header .selector {
+  flex: 1;
+  display: flex;
+  justify-content: center;       /* 科目选择水平居中 */
+}
+.overview-header .selector select {
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 260px;
+  cursor: pointer;
+}
+.overview-header .header-actions {
+  display: flex;
   gap: 8px;
+  align-items: center;
+  white-space: nowrap;
 }
-.page-title { font-size: 20px; font-weight: 600; color: #333; margin: 0; }
-.overview-header .header-actions { display: flex; gap: 8px; }
-.overview-header .btn, .selector .btn { text-decoration: none; display: inline-block; }
-
-.selector { margin-bottom: 16px; }
-.selector select {
-  padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 6px;
-  font-size: 14px; min-width: 260px; cursor: pointer;
-}
+.overview-header .header-actions .btn { white-space: nowrap; }
 
 .overview-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
 .card {
