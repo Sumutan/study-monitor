@@ -521,10 +521,11 @@ async function doBindAccount() {
 
 /**
  * 是否显示顶栏
- * 登录页不需要顶栏（已有自己的标题和布局），其他页面都显示
+ * 登录页不需要顶栏（已有自己的标题和布局），宣传页为独立分享页面也不显示，其他页面都显示
  */
 const showHeader = computed(() => {
-  return router.currentRoute.value.path !== '/login'
+  const path = router.currentRoute.value.path
+  return path !== '/login' && path !== '/psy-promo'
 })
 
 /**
