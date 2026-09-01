@@ -188,6 +188,13 @@ const routes = [
     meta: { title: '使用指南' },
   },
   {
+    // AI心理安全服务宣传页：公开页面，任何人通过链接直接访问，无需登录
+    path: '/psy-promo',
+    name: 'PsyPromo',
+    component: () => import('../views/PsyPromo.vue'),
+    meta: { title: 'AI无感校园心理安全服务' },  // 无 role 限制，公开页面
+  },
+  {
     // 404 兜底路由：匹配所有未定义的路径
     // 不用专门的 404 页面，而是重定向到课程列表，对用户更友好
     path: '/:pathMatch(.*)*',
